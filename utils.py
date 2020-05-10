@@ -28,7 +28,7 @@ def truncate(tokens_a, tokens_b, max_seq_length):
     '''
     Truncates by max_seq_length the concatenation of the two sentences
     '''
-    tok_a = tokens_a[:];  tok_b = tokens_b[:]
+    tok_a = tokens_a[:];  tok_b = tokens_b[:] # com et vaig dir, no cal. Tant ens és modificar la frase original
     len_a = len(tok_a);  len_b = len(tok_b)
     len_t = len_a + len_b
     m = min(1,max_seq_length/len_t)
@@ -46,10 +46,13 @@ def token_features(tokens_kind, tokens, segment_ids, kind):
     
     #The first sentence assings a seg. value of 1
     # and the second one a value of 2
-    seg = 1 if kind == "a" else 2
-    for token in tokens_kind:
+    seg = 1 if kind == "a" else 2 # per mi l'argument podria ser ja numèric
+    for token in tokens_kind
         tokens.append(token)
         segment_ids.append(seg)
+    # jo canviaria les 3 línies anteriors per les dues seguüents:
+    # tokens = np.concatenate((tokens, tokens_kind))
+    # segment_ids = np.concatenate((segment_ids, [seg]*len(tokens_kind)))
     tokens.append("[SEP]")
     segment_ids.append(seg)
     
