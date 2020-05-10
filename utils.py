@@ -70,6 +70,7 @@ def DataFeatures(data, max_seq_length=None):
                 - segment_ids
                 - positional_ids
     '''
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
     INPUT_IDS = []
     SEGMENT_IDS = []
     for i in range(len(data)):
