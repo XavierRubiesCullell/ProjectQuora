@@ -9,7 +9,7 @@ from pytorch_pretrained_bert.optimization import BertAdam
 from pytorch_pretrained_bert.file_utils import PYTORCH_PRETRAINED_BERT_CACHE
 from keras.preprocessing.sequence import pad_sequences
 
-def DataProcessor(data):
+def ReadData(data):
     '''
     Creation of data dataframes.
     -----------------------------
@@ -28,33 +28,33 @@ def truncate(tokens_a, tokens_b, max_seq_length):
     '''
     Truncates by max_seq_length the concatenation of the two sentences
     '''
-    tok_a = tokens_a[:];  tok_b = tokens_b[:] # com et vaig dir, no cal. Tant ens és modificar la frase original
-    len_a = len(tok_a);  len_b = len(tok_b)
+    len_a = len(tokens_a);  len_b = len(tokens_b)
     len_t = len_a + len_b
     m = min(1,max_seq_length/len_t)
     if len_a < len_b:
-        return tok_a[:int(np.ceil(len_a*m))], tok_b[:int(np.floor(len_b*m))]
+        return tokens_a[:int(np.ceil(len_a*m))], tokens_b[:int(np.floor(len_b*m))]
     else:
-        return tok_a[:int(np.floor(len_a*m))], tok_b[:int(np.ceil(len_b*m))]
+        return tokens_a[:int(np.floor(len_a*m))], tokens_b[:int(np.ceil(len_b*m))]
 
 
-def token_features(tokens_kind, tokens, segment_ids, kind):
+def token_features(tokens_a, tokens_b):
     '''
     Adds the special tokens: [CLS], [SEP], [SEP].
     Creates the segmentation vector of the two sentences.
     '''
+    tokens = ["[CLS]"]
+    segment_ids = [1]
     
-    #The first sentence assings a seg. value of 1
-    # and the second one a value of 2
-    seg = 1 if kind == "a" else 2 # per mi l'argument podria ser ja numèric
-    for token in tokens_kind
-        tokens.append(token)
-        segment_ids.append(seg)
-    # jo canviaria les 3 línies anteriors per les dues seguüents:
-    # tokens = np.concatenate((tokens, tokens_kind))
-    # segment_ids = np.concatenate((segment_ids, [seg]*len(tokens_kind)))
+    #The 1st sentence assings a seg. value of 0 and the 2nd one a value of 1
+    tokens += tokens_a
+    segment_ids += [0]*len(tokens_a)
     tokens.append("[SEP]")
-    segment_ids.append(seg)
+    segment_ids.append(0)
+    
+    tokens += tokens_b
+    segment_ids += [1]*len(tokens_b)
+    tokens.append("[SEP]")
+    segment_ids.append(1)
     
     return tokens, segment_ids
 
@@ -82,12 +82,8 @@ def DataFeatures(data, max_seq_length=None):
             # Account for [CLS], [SEP], [SEP] with "- 3"
             tokens_a, tokens_b = truncate(tokens_a, tokens_b, max_seq_length-3)
             
-        tokens = ["[CLS]"]
-        segment_ids = [1]
-        
         # Add special tokens and generate segment_ids
-        tokens, segment_ids = token_features(tokens_a, tokens, segment_ids, "a")
-        tokens, segment_ids = token_features(tokens_b, tokens, segment_ids, "b")
+        tokens, segment_ids = token_features(tokens_a, tokens_b)
         
         # Convert word tokens to indexes
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
