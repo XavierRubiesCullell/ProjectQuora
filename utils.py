@@ -9,6 +9,7 @@ from pytorch_pretrained_bert.optimization import BertAdam
 from pytorch_pretrained_bert.file_utils import PYTORCH_PRETRAINED_BERT_CACHE
 from keras.preprocessing.sequence import pad_sequences
 
+
 def ReadData(data):
     '''
     Creation of data dataframes.
@@ -23,6 +24,7 @@ def ReadData(data):
     targets = df[["is_duplicate"]]
     
     return questions_ab, targets
+
 
 def truncate(tokens_a, tokens_b, max_seq_length):
     '''
@@ -98,12 +100,14 @@ def DataFeatures(data, max_seq_length=None):
     INPUT_IDS = pad_sequences(INPUT_IDS, padding='post', truncating="post",maxlen=max_seq_length)
     SEGMENT_IDS = pad_sequences(SEGMENT_IDS, padding='post', truncating="post",maxlen=max_seq_length)
     POSITION_IDS = pad_sequences(POSITION_IDS, padding='post', truncating="post",maxlen=max_seq_length)
-
-    assert len(INPUT_IDS) == max_seq_length
-    assert len(SEGMENT_IDS) == max_seq_length
-    assert len(POSITION_IDS) == max_seq_length
+    
+    print (len(INPUT_IDS), len(SEGMENT_IDS), len(POSITION_IDS))
+    #assert len(INPUT_IDS) == max_seq_length
+    #assert len(SEGMENT_IDS) == max_seq_length
+    #assert len(POSITION_IDS) == max_seq_length
 
     return INPUT_IDS, SEGMENT_IDS, POSITION_IDS
+
 
 def WriteCSV(data, file_name):
     '''

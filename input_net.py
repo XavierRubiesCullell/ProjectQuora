@@ -12,6 +12,6 @@ def create_input(in_file, out_file):
     p = pd.DataFrame(POSITION_IDS)
     total = pd.concat([i, s, p], axis=1)
 
-    WriteCSV(total, out_file)
+    utils.WriteCSV(total, out_file)
 
     return total
