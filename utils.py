@@ -73,6 +73,7 @@ def DataFeatures(data, max_seq_length=None):
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
     INPUT_IDS = []
     SEGMENT_IDS = []
+    POSITION_IDS = []
     for i in range(len(data)):
         question_a = data.loc[i]["question1"]
         question_b = data.loc[i]["question2"]
