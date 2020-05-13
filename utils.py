@@ -45,7 +45,7 @@ def token_features(tokens_a, tokens_b):
     Creates the segmentation vector of the two sentences.
     '''
     tokens = ["[CLS]"]
-    segment_ids = [1]
+    segment_ids = [0]
     
     #The 1st sentence assings a seg. value of 0 and the 2nd one a value of 1
     tokens += tokens_a
@@ -94,7 +94,7 @@ def DataFeatures(data, max_seq_length=None):
         
         INPUT_IDS.append(input_ids)
         SEGMENT_IDS.append(segment_ids)
-        POSITION_IDS.append(list(range(len(input_ids))))
+        POSITION_IDS.append([1]*len(input_ids))
 
     # Zero-pad up to the sequence length.
     INPUT_IDS = pad_sequences(INPUT_IDS, padding='post', truncating="post",maxlen=max_seq_length)
