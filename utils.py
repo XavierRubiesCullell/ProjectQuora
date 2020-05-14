@@ -8,6 +8,7 @@ from pytorch_pretrained_bert.modeling import BertForSequenceClassification
 from pytorch_pretrained_bert.optimization import BertAdam
 from pytorch_pretrained_bert.file_utils import PYTORCH_PRETRAINED_BERT_CACHE
 from keras.preprocessing.sequence import pad_sequences
+from sklearn.metrics import confusion_matrix
 
 
 def ReadData(data):
@@ -107,6 +108,17 @@ def DataFeatures(data, max_seq_length=None):
     #assert len(POSITION_IDS) == max_seq_length
 
     return INPUT_IDS, SEGMENT_IDS, POSITION_IDS
+
+
+def metrics ():
+    tn, fp, fn, tp  = confusion_matrix(y_target, y_predict).ravel()
+
+    recall = tp/(tp+fn)
+    precision = tp/(tp+fp)
+    f1 = 2*tp/(2*tp+fp+fn)
+    accuracy = (tp+tn)/(tp+fp+fn+tn)
+    
+    return recall, precision, f1, accuracy
 
 
 def WriteCSV(data, file_name):
