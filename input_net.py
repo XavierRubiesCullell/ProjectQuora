@@ -10,7 +10,7 @@ def create_input(in_file, out_file):
     i = pd.DataFrame(INPUT_IDS)
     s = pd.DataFrame(SEGMENT_IDS)
     p = pd.DataFrame(POSITION_IDS)
-    total = pd.concat([i, s, p], axis=1)
+    total = pd.concat([i, s, p, targets], axis=1)
 
     utils.WriteCSV(total, out_file)
 

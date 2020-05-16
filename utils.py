@@ -11,6 +11,22 @@ from keras.preprocessing.sequence import pad_sequences
 from sklearn.metrics import confusion_matrix
 
 
+# Main functions
+def ToTensor(data):
+    input_ids = np.array(data.iloc[:,:70])
+    token_type_ids = np.array(data.iloc[:,70:140])
+    attention_masks = np.array(data.iloc[:,140:210])
+    targets = np.array(data.iloc[:,-1])
+    
+    tokens_tensor = torch.tensor(input_ids, dtype=torch.long)
+    segments_tensor = torch.tensor(token_type_ids, dtype=torch.long)
+    attention_tensor = torch.tensor(attention_masks, dtype=torch.long)
+    targets_tensor = torch.tensor(np.array(targets), dtype=torch.long)
+
+    return tokens_tensor, segments_tensor, attention_tensor, targets_tensor
+
+
+# Input Net functions
 def ReadData(data):
     '''
     Creation of data dataframes.
@@ -126,3 +142,4 @@ def WriteCSV(data, file_name):
     Writes a DataFrame to a CSV
     '''
     data.to_csv(file_name, index=False)
+
