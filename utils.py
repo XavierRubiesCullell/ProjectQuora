@@ -78,7 +78,7 @@ def token_features(tokens_a, tokens_b):
     return tokens, segment_ids
 
 
-def DataFeatures(data, max_seq_length=None):
+def DataFeatures(data, tokenizer, max_seq_length=None):
     '''
     Create phrase embeddings for tokens and sentence segmentation.
     ----------------------------------
@@ -89,7 +89,7 @@ def DataFeatures(data, max_seq_length=None):
                 - segment_ids
                 - positional_ids
     '''
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+    #tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
     INPUT_IDS = []
     SEGMENT_IDS = []
     POSITION_IDS = []
