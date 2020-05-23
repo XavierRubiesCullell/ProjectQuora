@@ -12,16 +12,15 @@ from sklearn.metrics import confusion_matrix
 
 
 # Main functions
-def ToTensor(data):
-    input_ids = np.array(data.iloc[:,:70])
-    token_type_ids = np.array(data.iloc[:,70:140])
-    attention_masks = np.array(data.iloc[:,140:210])
-    targets = np.array(data.iloc[:,-1])
-    
+def ToTensor(X, y):
+    input_ids = X[:,:70]
+    token_type_ids = X[:,70:140]
+    attention_masks = X[:,140:]
+
     tokens_tensor = torch.tensor(input_ids, dtype=torch.long)
     segments_tensor = torch.tensor(token_type_ids, dtype=torch.long)
     attention_tensor = torch.tensor(attention_masks, dtype=torch.long)
-    targets_tensor = torch.tensor(np.array(targets), dtype=torch.long)
+    targets_tensor = torch.tensor(y, dtype=torch.long)
 
     return tokens_tensor, segments_tensor, attention_tensor, targets_tensor
 
