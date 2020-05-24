@@ -117,7 +117,6 @@ def DataFeatures(data, tokenizer, max_seq_length=None):
     SEGMENT_IDS = pad_sequences(SEGMENT_IDS, padding='post', truncating="post",maxlen=max_seq_length)
     POSITION_IDS = pad_sequences(POSITION_IDS, padding='post', truncating="post",maxlen=max_seq_length)
     
-    print (len(INPUT_IDS), len(SEGMENT_IDS), len(POSITION_IDS))
     #assert len(INPUT_IDS) == max_seq_length
     #assert len(SEGMENT_IDS) == max_seq_length
     #assert len(POSITION_IDS) == max_seq_length
