@@ -20,6 +20,10 @@ def ToTensor(X, y):
     tokens_tensor = torch.tensor(input_ids, dtype=torch.long)
     segments_tensor = torch.tensor(token_type_ids, dtype=torch.long)
     attention_tensor = torch.tensor(attention_masks, dtype=torch.long)
+
+    if y is None:
+        return tokens_tensor, segments_tensor, attention_tensor
+    
     targets_tensor = torch.tensor(y, dtype=torch.long)
 
     return tokens_tensor, segments_tensor, attention_tensor, targets_tensor
