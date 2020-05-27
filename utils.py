@@ -3,10 +3,6 @@ import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
 import os
 import torch
 import matplotlib.pyplot as plt
-from pytorch_pretrained_bert.tokenization import BertTokenizer
-from pytorch_pretrained_bert.modeling import BertForSequenceClassification
-from pytorch_pretrained_bert.optimization import BertAdam
-from pytorch_pretrained_bert.file_utils import PYTORCH_PRETRAINED_BERT_CACHE
 from keras.preprocessing.sequence import pad_sequences
 from sklearn.metrics import confusion_matrix
 

@@ -17,6 +17,8 @@ import pandas as pd
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import time
+import datetime
 
 # Transformers
 from transformers import AlbertConfig, AlbertForSequenceClassification, AlbertTokenizer
@@ -91,8 +93,8 @@ def batch_generator(data, target, batch_size):
     perm = np.random.permutation(nsamples)
     for i in range(0, nsamples, batch_size):
         batch_idx = perm[i:i+batch_size]
-        print("Iteration:", i//batch_size+1 , "/", nsamples//batch_size+1)
-        
+        if (i//batch_size % 5 == 0 or i//batch_size == 0):
+            print("Batch", i//batch_size+1 , "of", nsamples//batch_size+1)
         if target is not None:
             yield data[batch_idx,:], target[batch_idx]
         else:
@@ -104,41 +106,46 @@ def training(model, train_data, train_target, epoch, args):
     optimizer = AdamW(model.parameters(), lr=args['learning_rate'], correct_bias=False)
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps=args['num_warmup_steps'],
                                                 num_training_steps=args['num_training_steps'])
-    b = 0
+    step = 0
     ncorrect = 0
     total_loss = 0
 
     batch_size = args['batch_size']
     model.train()
+
     for X, y in batch_generator(train_data, train_target, batch_size):
-        
+
         X_i, X_s, X_p, y = utils.ToTensor(X,y)
         
+        model.zero_grad()
+
         out = model(input_ids=X_i, token_type_ids=X_s, attention_mask=X_p, labels=y)[1]
         
         loss = criterion(out, y)
         loss.backward()
-        total_loss += loss
-        #torch.nn.utils.clip_grad_norm_(model.parameters(), args['max_grad_norm'])  # Gradient clipping 
+        total_loss += loss.item()
+        torch.nn.utils.clip_grad_norm_(model.parameters(), args['max_grad_norm'])  # Gradient clipping 
         optimizer.step()
-        #scheduler.step()
-        optimizer.zero_grad()
+        scheduler.step()
 
         out = F.softmax(out, dim=1)
 
         ncorrect += (torch.max(out, 1)[1] == y).sum().item()
-        print("Training Loss :", loss.item())
-        b += 1
+        
+        if (step % 5 == 0 or step == 0):
+            print("Training Loss : {0:.2f}".format(loss))
+        step += 1
+
     total_loss /= len(train_data)
     acc = ncorrect/len(train_data) * 100
-    print("Training Accuracy :", acc)
+    print("\nAverage Training Accuracy: {0:.2f} \n".format(acc))
     return acc, loss
 
 
 def validation(model, eval_data, eval_target, epoch, args):
     criterion = nn.CrossEntropyLoss(reduction='mean')
 
-    b = 0
+    step = 0
     ncorrect = 0
     total_loss = 0
 
@@ -154,15 +161,29 @@ def validation(model, eval_data, eval_target, epoch, args):
         total_loss += loss
         out = F.softmax(out, dim=1)
         ncorrect += (torch.max(out, 1)[1] == y).sum().item()
-        print("Validation Loss :", loss.item())
-        b += 1
+        if (step % 5 == 0 or step == 0):
+            print("Validation Loss : {0:.2f}".format(loss))
+        step += 1
 
     total_loss /= len(eval_data)
     acc = ncorrect/len(eval_data) * 100
-    print("Validation Accuracy :", acc)
+    print("\nAverage Validation Accuracy: {0:.2f} \n".format(acc))
     return acc, loss
 
+
+def format_time(elapsed):
+    '''
+    Takes a time in seconds and returns a string hh:mm:ss
+    '''
+    # Round to the nearest second.
+    elapsed_rounded = int(round((elapsed)))
+    
+    # Format as hh:mm:ss
+    return str(datetime.timedelta(seconds=elapsed_rounded))
+
+
 def build(learn_data, model_class, pretrained_model, args):
+
     model = model_class.from_pretrained(pretrained_model, num_labels=2)
     print("Model loaded")
 
@@ -175,15 +196,21 @@ def build(learn_data, model_class, pretrained_model, args):
     val_acc = [None]*epochs
     val_loss = [None]*epochs
 
-    for epoch in range(epochs):
-        print("EPOCH", epoch)
-        print("Training...")
+    total_t0 = time.time()
+
+    for epoch in range(0, epochs):
+        print("")
+        print('EPOCH {:} / {:} '.format(epoch + 1, epochs))
+        print('======== Training ========')
+        total_train_loss = 0
+
+        t0 = time.time()
         t_acc, t_loss = training(model, X_train, y_train, epoch, args)
              
         train_acc[epoch] = t_acc
         train_loss[epoch] = t_loss
         
-        print("Validation...")
+        print('======== Validació ========')
         v_acc, v_loss = validation(model, X_val, y_val, epoch, args)
         val_acc[epoch] = v_acc
         val_loss[epoch] = v_loss
@@ -213,9 +240,12 @@ def test(model, test_data, args):
 # ## Learning
 
 # %%
+
 train_acc, val_acc = build(df, model_class, pretrained_model, args)
-print("Train acc", train_acc)
-print("Val acc", val_acc)
+print("-------------------------------")
+print("Final Training Accuracy {0:.2f}".format(train_acc[-1]))
+print("Final Validation Accuracy {0:.2f}".format(val_acc[-1]))
+print("-------------------------------")
 # %% [markdown]
 # ## Proves
 
