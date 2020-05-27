@@ -86,6 +86,17 @@ else:
 # 
 
 # %%
+def format_time(elapsed):
+    '''
+    Takes a time in seconds and returns a string hh:mm:ss
+    '''
+    # Round to the nearest second.
+    elapsed_rounded = int(round((elapsed)))
+    
+    # Format as hh:mm:ss
+    return str(datetime.timedelta(seconds=elapsed_rounded))
+
+
 def batch_generator(data, target, batch_size):
     data = np.array(data)[:100]
     target = np.array(target)[:100]
@@ -99,6 +110,7 @@ def batch_generator(data, target, batch_size):
             yield data[batch_idx,:], target[batch_idx]
         else:
             yield data[batch_idx], None
+
 
 def training(model, train_data, train_target, epoch, args):
 
@@ -114,7 +126,7 @@ def training(model, train_data, train_target, epoch, args):
     model.train()
 
     for X, y in batch_generator(train_data, train_target, batch_size):
-
+        start = time.time()
         X_i, X_s, X_p, y = utils.ToTensor(X,y)
         
         model.zero_grad()
@@ -132,6 +144,8 @@ def training(model, train_data, train_target, epoch, args):
 
         ncorrect += (torch.max(out, 1)[1] == y).sum().item()
         
+        end = time.time()
+        print("Batch time: ", format_time(end-start))
         if (step % 5 == 0 or step == 0):
             print("Training Loss : {0:.2f}".format(loss))
         step += 1
@@ -152,7 +166,7 @@ def validation(model, eval_data, eval_target, epoch, args):
     batch_size = args['batch_size']
     model.eval()
     for X, y in batch_generator(eval_data, eval_target, batch_size):
-        
+        start = time.time()
         X_i, X_s, X_p, y = utils.ToTensor(X,y)
         
         out = model(input_ids=X_i, token_type_ids=X_s, attention_mask=X_p, labels=y)[1]
@@ -161,6 +175,9 @@ def validation(model, eval_data, eval_target, epoch, args):
         total_loss += loss
         out = F.softmax(out, dim=1)
         ncorrect += (torch.max(out, 1)[1] == y).sum().item()
+
+        end = time.time()
+        print("Batch time: ", format_time(end-start))
         if (step % 5 == 0 or step == 0):
             print("Validation Loss : {0:.2f}".format(loss))
         step += 1
@@ -171,17 +188,7 @@ def validation(model, eval_data, eval_target, epoch, args):
     return acc, loss
 
 
-def format_time(elapsed):
-    '''
-    Takes a time in seconds and returns a string hh:mm:ss
-    '''
-    # Round to the nearest second.
-    elapsed_rounded = int(round((elapsed)))
-    
-    # Format as hh:mm:ss
-    return str(datetime.timedelta(seconds=elapsed_rounded))
-
-
+# %%
 def build(learn_data, model_class, pretrained_model, args):
 
     model = model_class.from_pretrained(pretrained_model, num_labels=2)
@@ -210,7 +217,7 @@ def build(learn_data, model_class, pretrained_model, args):
         train_acc[epoch] = t_acc
         train_loss[epoch] = t_loss
         
-        print('======== Validació ========')
+        print('======== Validation ========')
         v_acc, v_loss = validation(model, X_val, y_val, epoch, args)
         val_acc[epoch] = v_acc
         val_loss[epoch] = v_loss
