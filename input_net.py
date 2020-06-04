@@ -9,6 +9,7 @@ def create_input(in_file, out_file, tokenizer, pretrained_model, args):
     print("Dataset length:", len(questions_ab))
     tokenizer = tokenizer.from_pretrained(pretrained_model, do_lower_case=True)
     print("Pretrained model used:", pretrained_model)
+    print("Maximum sequence length:", max_len)
 
     INPUT_IDS, SEGMENT_IDS, POSITION_IDS = utils.DataFeatures(questions_ab, tokenizer, max_len)
 

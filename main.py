@@ -2,9 +2,7 @@
 # To add a new markdown cell, type '# %% [markdown]'
 # %%
 import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
-
-
+warnings.simplefilter(action='ignore', category=UserWarning)
 # %%
 # Files
 import input_net
@@ -54,11 +52,11 @@ MODEL_CLASSES = {
 }
 
 args = {
-    'model_type': 'bert',
+    'model_type': 'distilbert',
     'do_train': True,
     'do_eval': True,
-    'max_seq_length': 70,
-    'batch_size': 8, 
+    'max_seq_length': 90,
+    'batch_size': 4, 
     'epochs': 2,
     'learning_rate': 1e-3,
     'num_training_steps': 100,
@@ -67,10 +65,6 @@ args = {
 }
 
 model_class, tokenizer_class, pretrained_model = MODEL_CLASSES[args['model_type']]
-
-# %% [markdown]
-# ## Input Generation
-
 # %%
 TRAIN = "data/train.csv"
 TEST = "data/test.csv"
@@ -80,7 +74,6 @@ if not path.exists(INPUT_NET):
     df = input_net.create_input(TRAIN, INPUT_NET, tokenizer_class, pretrained_model, args)
 else:
     df = pd.read_csv(INPUT_NET)
-
 # %% [markdown]
 # ## Net Functions -> quan funcioni tot cridar-ho desde net.py
 # 
