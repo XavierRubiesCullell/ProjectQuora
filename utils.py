@@ -9,9 +9,10 @@ from sklearn.metrics import confusion_matrix
 
 # Main functions
 def ToTensor(X, y):
-    input_ids = X[:,:70]
-    token_type_ids = X[:,70:140]
-    attention_masks = X[:,140:]
+    n = X.shape[1]/3
+    input_ids = X[:,:n]
+    token_type_ids = X[:,n:-n]
+    attention_masks = X[:,-n:]
 
     tokens_tensor = torch.tensor(input_ids, dtype=torch.long)
     segments_tensor = torch.tensor(token_type_ids, dtype=torch.long)
