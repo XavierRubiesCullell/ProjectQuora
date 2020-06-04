@@ -17,7 +17,7 @@ def create_input(in_file, out_file, tokenizer, pretrained_model, args):
     p = pd.DataFrame(POSITION_IDS)
 
     total = pd.concat([i, s, p, targets], axis=1)
-    total.columns = ["I"+str(i) for i in range(70)] + ["S"+str(i) for i in range(70)] + ["P"+str(i) for i in range(70)] + ["is_duplicate"]
+    total.columns = ["I"+str(i) for i in range(max_seq_length)] + ["S"+str(i) for i in range(max_seq_length)] + ["P"+str(i) for i in range(max_seq_length)] + ["is_duplicate"]
     
     utils.WriteCSV(total, out_file)
     print("Input saved:", out_file)
