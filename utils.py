@@ -34,22 +34,6 @@ def ToTensor(X, y):
     return tokens_tensor, segments_tensor, attention_tensor, targets_tensor
 
 
-def ReadData(data):
-    '''
-    Creation of data dataframes.
-    -----------------------------
-    input = CSV Path
-
-    output =    - Questions DataFrame
-                - Target DataFrame
-    '''
-    df = pd.read_csv(data).fillna("")
-    questions_ab = df[["question1","question2"]]
-    targets = df[["is_duplicate"]]
-    
-    return questions_ab, targets
-
-
 def truncate(tokens_a, tokens_b, max_seq_length):
     '''
     Truncates by max_seq_length the concatenation of the two sentences

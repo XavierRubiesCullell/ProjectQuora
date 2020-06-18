@@ -1,11 +1,11 @@
 import utils
 import pandas as pd
 
-def create_input(in_file, out_file, tokenizer, pretrained_model, args):
+def create_input(data, tokenizer, pretrained_model, max_len, out_file = None):
 
-    max_len = args['max_seq_length']
+    questions_ab = data[["question1","question2"]]
+    targets = data[["is_duplicate"]]
 
-    questions_ab, targets = utils.ReadData(in_file)
     print("Dataset length:", len(questions_ab))
     tokenizer = tokenizer.from_pretrained(pretrained_model, do_lower_case=True)
     print("Pretrained model used:", pretrained_model)
@@ -20,7 +20,8 @@ def create_input(in_file, out_file, tokenizer, pretrained_model, args):
     total = pd.concat([i, s, p, targets], axis=1)
     total.columns = ["I"+str(i) for i in range(max_len)] + ["S"+str(i) for i in range(max_len)] + ["P"+str(i) for i in range(max_len)] + ["is_duplicate"]
     
-    utils.WriteCSV(total, out_file)
-    print("Input saved:", out_file)
+    if out_file:
+        utils.WriteCSV(total, out_file)
+        print("Input saved:", out_file)
 
     return total

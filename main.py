@@ -70,8 +70,11 @@ TRAIN = "data/train.csv"
 TEST = "data/test.csv"
 INPUT_NET = 'data/input' + str(args['max_seq_length']) + '_' + pretrained_model + '.csv'
 
+df_train = pd.read_csv(TRAIN).fillna("")
+df_test = pd.read_csv(TEST).fillna("")
+
 if not path.exists(INPUT_NET):
-    df = input_net.create_input(TRAIN, INPUT_NET, tokenizer_class, pretrained_model, args)
+    df = input_net.create_input(data=df_train, tokenizer=tokenizer_class, pretrained_model=pretrained_model, max_len=args['max_seq_length'], out_file = INPUT_NET)
 else:
     df = pd.read_csv(INPUT_NET)
 # %% [markdown]
