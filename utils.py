@@ -1,17 +1,21 @@
-import numpy as np # linear algebra
-import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+import numpy as np 
+import pandas as pd 
 import os
 import torch
 import time
 import datetime
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
+import seaborn as sn
 from keras.preprocessing.sequence import pad_sequences
 from sklearn.metrics import confusion_matrix
 from matplotlib.collections import QuadMesh
 import seaborn as sn
 
-# Main functions
+#######################################################################################
+# Input creation
+#######################################################################################
+
 def ToTensor(X, y):
     n = int(int(X.shape[1])/3)
     input_ids = X[:,:n]
@@ -30,7 +34,6 @@ def ToTensor(X, y):
     return tokens_tensor, segments_tensor, attention_tensor, targets_tensor
 
 
-# Input Net functions
 def ReadData(data):
     '''
     Creation of data dataframes.
@@ -106,10 +109,9 @@ def DataFeatures(data, tokenizer, max_seq_length=None):
         if (max_seq_length):
             # Account for [CLS], [SEP], [SEP] with "- 3"
             tokens_a, tokens_b = truncate(tokens_a, tokens_b, max_seq_length-3)
-            
-        # Add special tokens and generate segment_ids
-        tokens, segment_ids = token_features(tokens_a, tokens_b)
         
+        # Add special tokens and generate segment_ids
+        tokens, segment_ids = token_features(tokens_a, tokens_b) 
         # Convert word tokens to indexes
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
         
@@ -122,22 +124,12 @@ def DataFeatures(data, tokenizer, max_seq_length=None):
     SEGMENT_IDS = pad_sequences(SEGMENT_IDS, padding='post', truncating="post",maxlen=max_seq_length)
     POSITION_IDS = pad_sequences(POSITION_IDS, padding='post', truncating="post",maxlen=max_seq_length)
     
-    #assert len(INPUT_IDS) == max_seq_length
-    #assert len(SEGMENT_IDS) == max_seq_length
-    #assert len(POSITION_IDS) == max_seq_length
+    assert len(INPUT_IDS) == max_seq_length
+    assert len(SEGMENT_IDS) == max_seq_length
+    assert len(POSITION_IDS) == max_seq_length
 
     return INPUT_IDS, SEGMENT_IDS, POSITION_IDS
 
-
-def metrics ():
-    tn, fp, fn, tp  = confusion_matrix(y_target, y_predict).ravel()
-
-    recall = tp/(tp+fn)
-    precision = tp/(tp+fp)
-    f1 = 2*tp/(2*tp+fp+fn)
-    accuracy = (tp+tn)/(tp+fp+fn+tn)
-    
-    return recall, precision, f1, accuracy
 
 def format_time(elapsed):
     '''
@@ -149,15 +141,54 @@ def format_time(elapsed):
     # Format as hh:mm:ss
     return str(datetime.timedelta(seconds=elapsed_rounded))
 
+
 def WriteCSV(data, file_name):
     '''
     Writes a DataFrame to a CSV
     '''
     data.to_csv(file_name, index=False)
 
-#####################################
-# # PLOTS
-#####################################
+#######################################################################################
+# Class classification
+#######################################################################################
+
+def new_nodes(f,s, nodes, classes):
+    if f not in nodes:
+        nodes[f] = f
+        classes[f] = [f]
+
+    if s not in nodes:
+        nodes[s] = s
+        classes[s] = [s]
+
+def class_join(f,s, nodes, classes):
+    class_m = min(nodes[f], nodes[s])
+    class_M = max(nodes[f], nodes[s])
+    
+    classes[class_m] += classes[class_M]
+    for node in classes[class_M]:
+        nodes[node] = class_m
+    del classes[class_M]
+
+def clusters(list_):
+    nodes = {}
+    classes = {}
+    '''
+    input: id1, id2, t (target)
+    output: it builds classes (dictionary class:[nodes]) and nodes_to_class (dictionary node:class)
+    '''
+    for f,s,t in list_:
+        new_nodes(f,s,nodes,classes)
+        if t and nodes[f] != nodes[s]:
+            class_join(f,s,nodes,classes)
+    return (classes, nodes)
+
+#######################################################################################
+# PLOTS
+#######################################################################################
+
+# Learning evolution plot
+# ················································
 
 def plot_epochs(epochs, train_acc, validation_acc, train_loss, validation_loss):
     x = [i for i in range(1,epochs+1)]
@@ -174,7 +205,6 @@ def plot_epochs(epochs, train_acc, validation_acc, train_loss, validation_loss):
     ax1.set_xticks(x)
     ax1.legend(loc='upper left', shadow=True)
 
-
     ax2.scatter(x,train_loss)
     ax2.plot(x,train_loss, label="train")
     ax2.scatter(x,validation_loss, color = 'g')
@@ -184,16 +214,8 @@ def plot_epochs(epochs, train_acc, validation_acc, train_loss, validation_loss):
     ax2.legend(loc='lower left', shadow=True)
     plt.show()
 
-#################################################################################3
-
-#imports
-from pandas import DataFrame
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
-from matplotlib.collections import QuadMesh
-import seaborn as sn
-
+# Confusion matrix plot
+# ················································
 
 def get_new_fig(fn, figsize=[9,9]):
     """ Init graphics """
@@ -250,9 +272,7 @@ def configcell_text_and_colors(array_df, lin, col, oText, facecolors, posi, fz, 
         lis_pos = [(oText._x, oText._y-0.3), (oText._x, oText._y), (oText._x, oText._y+0.3)]
         for i in range(len(lis_txt)):
             newText = dict(x=lis_pos[i][0], y=lis_pos[i][1], text=lis_txt[i], kw=lis_kwa[i])
-            #print 'lin: %s, col: %s, newText: %s' %(lin, col, newText)
             text_add.append(newText)
-        #print '\n'
 
         #set background color for sum cells (last line and last column)
         carr = [58/255, 58/255, 58/255, 1.0]
@@ -386,8 +406,6 @@ def plot_confusion_matrix_from_data(y_test, predictions, columns=None, annot=Tru
         plot confusion matrix function with y_test (actual values) and predictions (predic),
         whitout a confusion matrix yet
     """
-    from sklearn.metrics import confusion_matrix
-    from pandas import DataFrame
 
     #data
     if(not columns):
@@ -402,16 +420,16 @@ def plot_confusion_matrix_from_data(y_test, predictions, columns=None, annot=Tru
     fz = 14;
     figsize=[9,9];
     show_null_values = 2
-    df_cm = DataFrame(confm, index=columns, columns=columns)
+    df_cm = pd.DataFrame(confm, index=columns, columns=columns)
     pretty_plot_confusion_matrix(df_cm, fz=fz, cmap=cmap, figsize=figsize, show_null_values=show_null_values, pred_val_axis=pred_val_axis)
 #
 
-def confussion_matrix(cf):
+def confusion_matrix(cf):
     #test function with confusion matrix done
     array = np.array(cf)
  
     #get pandas dataframe
-    df_cm = DataFrame(array, index=range(1,3), columns=range(1,3))
+    df_cm = pd.DataFrame(array, index=range(1,3), columns=range(1,3))
     #colormap: see this and choose your more dear
     cmap = 'PuRd'
     pretty_plot_confusion_matrix(df_cm, cmap=cmap)
