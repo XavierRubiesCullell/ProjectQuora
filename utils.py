@@ -12,6 +12,8 @@ from sklearn.metrics import confusion_matrix
 from matplotlib.collections import QuadMesh
 import seaborn as sn
 
+
+
 #######################################################################################
 # Input creation
 #######################################################################################
@@ -135,6 +137,12 @@ def WriteCSV(data, file_name):
 #######################################################################################
 # Class classification
 #######################################################################################
+def list_from_string(emb):
+    emb = emb[1:-1]
+    emb = emb.split(', ')
+    emb = list(map(lambda x: int(x), emb))
+    return emb
+
 
 def new_nodes(f,s, nodes, classes):
     if f not in nodes:
@@ -145,6 +153,7 @@ def new_nodes(f,s, nodes, classes):
         nodes[s] = s
         classes[s] = [s]
 
+
 def class_join(f,s, nodes, classes):
     class_m = min(nodes[f], nodes[s])
     class_M = max(nodes[f], nodes[s])
@@ -153,6 +162,7 @@ def class_join(f,s, nodes, classes):
     for node in classes[class_M]:
         nodes[node] = class_m
     del classes[class_M]
+
 
 def clusters(list_):
     nodes = {}
@@ -207,7 +217,7 @@ def get_new_fig(fn, figsize=[9,9]):
     ax1 = fig1.gca()   #Get Current Axis
     ax1.cla() # clear existing plot
     return fig1, ax1
-#
+
 
 def configcell_text_and_colors(array_df, lin, col, oText, facecolors, posi, fz, fmt, show_null_values=0):
     """
@@ -286,7 +296,7 @@ def configcell_text_and_colors(array_df, lin, col, oText, facecolors, posi, fz, 
             oText.set_color('r')
 
     return text_add, text_del
-#
+
 
 def insert_totals(df_cm):
     """ insert total column and line (the last ones) """
@@ -301,9 +311,7 @@ def insert_totals(df_cm):
     df_cm.loc['sum_col'] = sum_col
 
     df_cm.index
-    
-    #print ('\ndf_cm:\n', df_cm, '\n\b\n')
-#
+
 
 def pretty_plot_confusion_matrix(df_cm, annot=True, cmap="Oranges", fmt='.2f', fz=14,
       lw=0.5, cbar=False, figsize=[8,8], show_null_values=0, pred_val_axis='y'):
@@ -361,7 +369,6 @@ def pretty_plot_confusion_matrix(df_cm, annot=True, cmap="Oranges", fmt='.2f', f
         pos = np.array( t.get_position()) - [0.5,0.5]
         lin = int(pos[1]); col = int(pos[0]);
         posi += 1
-        #print ('>>> pos: %s, posi: %s, val: %s, txt: %s' %(pos, posi, array_df[lin][col], t.get_text()))
 
         #set text
         txt_res = configcell_text_and_colors(array_df, lin, col, t, facecolors, posi, fz, fmt, show_null_values)
@@ -391,11 +398,7 @@ def plot_confusion_matrix_from_data(y_test, predictions, columns=None, annot=Tru
         whitout a confusion matrix yet
     """
 
-    #data
     if(not columns):
-        #labels axis integer:
-        ##columns = range(1, len(np.unique(y_test))+1)
-        #labels axis string:
         from string import ascii_uppercase
         columns = ['class %s' %(i) for i in list(ascii_uppercase)[0:len(np.unique(y_test))]]
 
@@ -406,14 +409,11 @@ def plot_confusion_matrix_from_data(y_test, predictions, columns=None, annot=Tru
     show_null_values = 2
     df_cm = pd.DataFrame(confm, index=columns, columns=columns)
     pretty_plot_confusion_matrix(df_cm, fz=fz, cmap=cmap, figsize=figsize, show_null_values=show_null_values, pred_val_axis=pred_val_axis)
-#
+
 
 def confusion_matrix(cf):
-    #test function with confusion matrix done
     array = np.array(cf)
  
-    #get pandas dataframe
     df_cm = pd.DataFrame(array, index=range(1,3), columns=range(1,3))
-    #colormap: see this and choose your more dear
     cmap = 'PuRd'
     pretty_plot_confusion_matrix(df_cm, cmap=cmap)
