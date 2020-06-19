@@ -2,6 +2,15 @@ import utils
 import pandas as pd
 
 def create_input(data, tokenizer, pretrained_model, max_len, out_file = None):
+    '''
+    Create the input model data 
+    - input:    data: raw data
+                tokenizer: model tokenizer
+                pretrained_model: pretrained configuration
+                max_len: max question length 
+                output_file: CSV filename
+    - output:   total: dataframe
+    '''
 
     questions_ab = data[["question1","question2"]]
     targets = data[["is_duplicate"]]
