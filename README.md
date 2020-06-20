@@ -34,6 +34,6 @@ https://www.kaggle.com/c/quora-question-pairs <br> <br>
 >> -  [table_generation.ipynb](https://github.com/XavierRubiesCullell/ProjectQuora/blob/master/src/table_generation.ipynb): Generates [sentences.csv](https://github.com/XavierRubiesCullell/ProjectQuora/blob/master/src/data/sentences.csv)
 >> -  [utils.py](https://github.com/XavierRubiesCullell/ProjectQuora/blob/master/src/utils.py): Contains auxiliary functions
 
-- [README.md](https://github.com/XavierRubiesCullell/ProjectQuora/blob/master/README.md): Project Documentation
-
 - [.gitignore](https://github.com/XavierRubiesCullell/ProjectQuora/blob/master/.gitignore) : Untracked files
+
+- [README.md](https://github.com/XavierRubiesCullell/ProjectQuora/blob/master/README.md): Project Documentation
