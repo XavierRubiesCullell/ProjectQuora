@@ -7,6 +7,9 @@ from the Hugging Face library. We will present the results for different models 
 DistilBERT, ...) and different hyperparameter combinations that have been used. Finally, we will
 explore sentence embedding meaning.
 
+The dataset is taken from Quora competition at Kaggle:
+https://www.kaggle.com/c/quora-question-pairs
+
 >- [plots](https://github.com/XavierRubiesCullell/ProjectQuora/tree/master/plots): Folder that contains the plots generated in [class_visualization.ipynb](https://github.com/XavierRubiesCullell/ProjectQuora/blob/master/src/class_visualization.ipynb)
 >> -  [2d_pca.html](https://github.com/XavierRubiesCullell/ProjectQuora/blob/master/plots/2d_pca.html)
 >> -  [2d_tsne.html](https://github.com/XavierRubiesCullell/ProjectQuora/blob/master/plots/2d_tsne.html) 
