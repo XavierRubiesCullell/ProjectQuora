@@ -8,7 +8,7 @@ DistilBERT, ...) and different hyperparameter combinations that have been used. 
 explore sentence embedding meaning.
 
 The dataset is taken from Quora competition at Kaggle: <br>
-https://www.kaggle.com/c/quora-question-pairs <br>
+https://www.kaggle.com/c/quora-question-pairs <br> <br>
 
 >- [plots](https://github.com/XavierRubiesCullell/ProjectQuora/tree/master/plots): Folder that contains the plots generated in [class_visualization.ipynb](https://github.com/XavierRubiesCullell/ProjectQuora/blob/master/src/class_visualization.ipynb)
 >> -  [2d_pca.html](https://github.com/XavierRubiesCullell/ProjectQuora/blob/master/plots/2d_pca.html)
