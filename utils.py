@@ -133,6 +133,7 @@ def WriteCSV(data, file_name):
 #######################################################################################
 # Class classification
 #######################################################################################
+
 def list_from_string(emb):
     emb = emb[1:-1]
     emb = emb.split(', ')
@@ -206,6 +207,7 @@ def plot_epochs(epochs, train_acc, validation_acc, train_loss, validation_loss):
 
 # Confusion matrix plot
 # ················································
+# (Code found in Internet)
 
 def get_new_fig(fn, figsize=[9,9]):
     """ Init graphics """
