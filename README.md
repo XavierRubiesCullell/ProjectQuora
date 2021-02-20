@@ -1,5 +1,5 @@
 # ProjectQuora
-### Xavier Rubiés Cullell & Dànae Canillas Sánchez
+### Dànae Canillas Sánchez & Xavier Rubiés Cullell
 
 In this project, a study of the dataset provided by Quora in its Kaggle competition has been
 carried out in order to detect duplicate questions. We will fine-tune pretrained transformer models
